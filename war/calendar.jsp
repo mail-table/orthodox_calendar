@@ -1,12 +1,12 @@
 <%@page trimDirectiveWhitespaces="true" %>
-<%@page contentType="text/html;charset=windows-1251" language="java" %>
+<%@page contentType="text/html" language="java" %>
 <%@page import="java.util.List,javax.jdo.PersistenceManager,klim.orthodox_calendar.PMF,klim.orthodox_calendar.Orthodox_calendarServlet,klim.orthodox_calendar.Day" %>
-<?xml version="1.0" encoding="windows-1251"?>
+<?xml version="1.0" encoding="utf-8"?>
 <rss version="2.0">
   <channel>
-    <title>ЏђЂ‚Ћ‘‹Ђ‚Ќ›‰ ЉЂ‹…Ќ„Ђђњ</title>
+    <title>РџСЂР°РІРѕСЃР»Р°РІРЅС‹Р№ РєР°Р»РµРЅРґР°СЂСЊ</title>
     <link>http://calendar.rop.ru</link>
-    <description>ЏђЂ‚Ћ‘‹Ђ‚Ќ›‰ ЉЂ‹…Ќ„Ђђњ</description>
+    <description>РџСЂР°РІРѕСЃР»Р°РІРЅС‹Р№ РєР°Р»РµРЅРґР°СЂСЊ</description>
     <language>ru</language>
     <managingEditor>mail-table@yandex.ru</managingEditor>
 <%
@@ -15,7 +15,7 @@
     List<Day> days = (List<Day>) pm.newQuery(query).execute();
     if (!days.isEmpty()) {
         for (Day d : days) {
-%>    
+%>
     <item>
       <title><%= d.getTitle() %></title>
       <comments><%= d.getComments() %></comments>

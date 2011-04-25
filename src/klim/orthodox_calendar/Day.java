@@ -56,6 +56,11 @@ public class Day {
 	}
 
 	public Text getDescription() {
+		return getDescription(true);
+	}
+	public Text getDescription(boolean env) {
+		if (env)
+			return new Text(escapeHtml(description.toString()));
 		return description;
 	}
 
@@ -208,7 +213,7 @@ public class Day {
                     // The header value contains the server's HTTP version
                 }
             }*/            
-            description = new Text(escapeHtml(ret));
+            description = new Text(ret);
         } catch (MalformedURLException e) {
             System.err.println(e);
         } catch (IOException e) {
