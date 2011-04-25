@@ -22,7 +22,6 @@ public class Orthodox_utilServlet extends HttpServlet {
 	    	String query = "select from " + Day.class.getName();
 	        List<Day> days = (List<Day>) pm.newQuery(query).execute();
 	        pm.deletePersistentAll(days);
-	    	System.out.println("pm.deletePersistentAll(days);");
 	    } catch (Exception e) {
 	    	System.out.println(e.getMessage());
 	    } finally {

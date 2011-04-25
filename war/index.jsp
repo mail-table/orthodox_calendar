@@ -6,8 +6,7 @@
     <ul>
 <%
     PersistenceManager pm = PMF.get().getPersistenceManager();
-    String query = "select from " + Day.class.getName();
-    List<Day> days = (List<Day>) pm.newQuery(query).execute();
+    List<Day> days = (List<Day>) pm.newQuery(PMF.query).execute();
     if (!days.isEmpty()) {
 %>
 <%
@@ -27,5 +26,9 @@
     }
 %>
     </ul>
+    <form action="/orthodox_calendar">
+    	<input name="dt" value="99">
+    	<button type="submit">OK</button>
+    </form>
   </body>
 </html>

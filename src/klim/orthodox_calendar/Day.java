@@ -33,6 +33,15 @@ public class Day {
 	@Persistent
 	private Date dayToParse;
 	
+	public Date getDayToParse() {
+		return dayToParse;
+	}
+
+	public void setDayToParse(Date dayToParse) {
+		this.dayToParse = dayToParse;
+		initAllFields();
+	}
+
 	@NotPersistent
 	private Calendar calendarDay;
 
@@ -55,18 +64,18 @@ public class Day {
 		return id;
 	}
 
-	public Text getDescription() {
-		return getDescription(true);
+	public String getDescription() {
+		return getDescription(false);
 	}
-	public Text getDescription(boolean env) {
+
+	public String getDescription(boolean env) {
 		if (env)
-			return new Text(escapeHtml(description.toString()));
-		return description;
+			return escapeHtml(description.getValue());
+		return description.getValue();
 	}
 
 	public void setDescription(Text description) {
 		this.description = description;
-		System.out.println(this.description);
 	}
 
 	@NotPersistent
@@ -81,10 +90,15 @@ public class Day {
 	@NotPersistent
 	private Boolean isInitialized;
 	
+//	public Day() {
+//		this.isInitialized = new Boolean(true);
+//	}
+
 	public Day(Date day) {
 		dayToParse = day;
 		initAllFields();
 		description = new Text(parseDay(day));
+		System.out.println(description.getValue());
 	}
 	
 	private void initAllFields() {
@@ -99,16 +113,7 @@ public class Day {
 			this.calendarDay.setTime(dayToParse);
 			this.calendarDay.add(Calendar.DATE, -13);
 			
-//			System.out.println("============" + this.c2.toString());
-//			System.out.println("============" + this.c1.toString());
-//			System.out.println("============" + this.calendarDay.toString());
-//			System.out.println("============" + this.calendarNewDay.toString());
-			
-//			title = getTitle();
-//			link = getLink();
-//			comments = getComments();
-			
-			isInitialized=new Boolean(true);
+			this.isInitialized=new Boolean(true);
 		}
 	}
 	
@@ -177,54 +182,14 @@ public class Day {
             } else
             	ret = "";
             
-            /*String out="<?xml version=\"1.0\" encoding=\"windows-1251\"?>\n";
-            out += "<rss version=\"2.0\">\n";
-            out += "  <channel>\n";
-
-            out += "    <title>èêÄÇéëãÄÇçõâ äÄãÖçÑÄêú</title>\n";
-            out += "    <link>http://calendar.rop.ru</link>\n";
-            out += "    <description>èêÄÇéëãÄÇçõâ äÄãÖçÑÄêú</description>\n";
-            out += "    <language>ru</language>\n";
-            out += "    <managingEditor>mail-table@yandex.ru</managingEditor>\n";
-            
-            out += "    <item>\n";
-            out += "      <title>"+ c1.format(cal.getTime()) + " / " +c2.format(cal1.getTime()) +"</title>\n";
-            out += "      <comments>"+ toOpen +"</comments>\n";
-            out += "      <link>"+ toOpen +"</link>\n";
-            out += "      <description>"+ escapeHtml(ret) +"</description>\n";
-            
-            out += "    </item>\n";
-            
-            
-            out += "  </channel>\n";
-            out += "</rss>";*/
-            
-            /*
-            for (int i=0; ; i++) {
-                String headerName = connection.getHeaderFieldKey(i);
-                String headerValue = connection.getHeaderField(i);
-                ret += headerName + " = " + headerValue + "<br>";
-
-                if (headerName == null && headerValue == null) {
-                    // No more headers
-                    break;
-                }
-                if (headerName == null) {
-                    // The header value contains the server's HTTP version
-                }
-            }*/            
             description = new Text(ret);
         } catch (MalformedURLException e) {
             System.err.println(e);
         } catch (IOException e) {
             System.err.println(e);
-        } /*catch (Exception e) {
-            System.err.println(e);
-        }*/		
-
-		return ret;
-		/*return "Hello, " + input + "!<br><br>I am running " + serverInfo
-				+ ".<br><br>It looks like you are using__:<br>" + userAgent;*/
+        }
+        
+        return ret;
 	}
 
 	public Calendar getCalendarDay() {
@@ -250,13 +215,6 @@ public class Day {
 		this.description=new Text("");
 	}
 
-	/**
-	 * Escape an html string. Escaping data received from the client helps to
-	 * prevent cross-site script vulnerabilities.
-	 * 
-	 * @param html the html string to escape
-	 * @return the escaped string
-	 */
 	private String escapeHtml(String html) {
 		if (html == null) {
 			return null;

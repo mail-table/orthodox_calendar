@@ -1,5 +1,5 @@
 <%@page trimDirectiveWhitespaces="true" %>
-<%@page contentType="text/html" language="java" %>
+<%@page contentType="text/html;charset=UTF-8" language="java" %>
 <%@page import="java.util.List,javax.jdo.PersistenceManager,klim.orthodox_calendar.PMF,klim.orthodox_calendar.Orthodox_calendarServlet,klim.orthodox_calendar.Day" %>
 <?xml version="1.0" encoding="utf-8"?>
 <rss version="2.0">
@@ -11,8 +11,7 @@
     <managingEditor>mail-table@yandex.ru</managingEditor>
 <%
     PersistenceManager pm = PMF.get().getPersistenceManager();
-    String query = "select from " + Day.class.getName();
-    List<Day> days = (List<Day>) pm.newQuery(query).execute();
+    List<Day> days = (List<Day>) pm.newQuery(PMF.query).execute();
     if (!days.isEmpty()) {
         for (Day d : days) {
 %>
@@ -20,7 +19,7 @@
       <title><%= d.getTitle() %></title>
       <comments><%= d.getComments() %></comments>
       <link><%= d.getLink() %></link>
-      <description><%= d.getDescription() %></description>
+      <description><%= d.getDescription(true) %></description>
     </item>
 <%
         }
