@@ -14,13 +14,13 @@
     String query = "select from " + Day.class.getName();
     List<Day> days = (List<Day>) pm.newQuery(query).execute();
     if (!days.isEmpty()) {
-        for (Day g : days) {
+        for (Day d : days) {
 %>    
     <item>
-      <title><%= g.getTitle() %></title>
-      <comments><%= g.getComments() %></comments>
-      <link><%= g.getLink() %></link>
-      <description><%= g.getDescription() %></description>
+      <title><%= d.getTitle() %></title>
+      <comments><%= d.getComments() %></comments>
+      <link><%= d.getLink() %></link>
+      <description><%= d.getDescription() %></description>
     </item>
 <%
         }
