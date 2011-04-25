@@ -90,15 +90,10 @@ public class Day {
 	@NotPersistent
 	private Boolean isInitialized;
 	
-//	public Day() {
-//		this.isInitialized = new Boolean(true);
-//	}
-
-	public Day(Date day) {
-		dayToParse = day;
+	public Day(Date day) {		
+		dayToParse = Day.cutDate(day);
 		initAllFields();
 		description = new Text(parseDay(day));
-		System.out.println(description.getValue());
 	}
 	
 	private void initAllFields() {
@@ -235,4 +230,15 @@ public class Day {
 	    }
 	    return outputBuilder.toString();
 	  }
+	
+	public static final Date cutDate(Date date) {
+		Calendar c = Calendar.getInstance();
+		c.setTime(date);
+		c.set(Calendar.HOUR_OF_DAY, 0);  
+		c.set(Calendar.MINUTE, 0);  
+		c.set(Calendar.SECOND, 0);  
+		c.set(Calendar.MILLISECOND, 0);
+
+		return c.getTime(); 
+	} 
 }

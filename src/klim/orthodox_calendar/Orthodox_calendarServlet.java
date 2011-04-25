@@ -18,34 +18,75 @@ public class Orthodox_calendarServlet extends HttpServlet {
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
 
-		Date date;
-		
-		if (req.getParameter("date") != null) {
-			DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT, Locale.US);
-			try {
-				date = df.parse(req.getParameter("date"));
-			} 
-			catch (Exception e)	{
-				logger.warning("Can't parse date from request: " + req.getParameter("date"));
-				date = new Date();
-			}
-		} else
-			date = new Date();
+		List<Date> dates = new ArrayList<Date>();
 
 		PersistenceManager pm = PMF.get().getPersistenceManager();
-		Day d = new Day(date);
-	    try {
-	    	Query query = pm.newQuery(Day.class.getName(), "dayToParse < :date");
-	    	List<Day> results = (List<Day>)query.execute(date);
-	    	if (results.isEmpty())
-	    		pm.makePersistent(d);
-	    	else
-				logger.warning("In DB already present date: " + date.toString());
-	    } catch (Exception e) {
-	    } finally {
-	        pm.close();
-	    }
+		try {
+			Query query = pm.newQuery("select from "
+					+ Configure.class.getName());
+			List<Configure> cfg = (List<Configure>) query.execute();
+			Configure c;
 
-	    resp.sendRedirect("/calendar.jsp");
+			if (cfg.isEmpty()) {
+				c = new Configure(3, 14);
+			} else
+				c = cfg.get(0);
+
+			if (req.getParameter("date") != null) {
+				DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT,
+						Locale.US);
+				try {
+					dates.add(df.parse(req.getParameter("date")));
+				} catch (Exception e) {
+					logger.warning("Can't parse date from request: "
+							+ req.getParameter("date"));
+					dates.add(new Date());
+				}
+			} else if (req.getParameter("daysForward") != null
+					|| c.getDaysForward() > 0) {
+				int forward = c.getDaysForward();
+				if (req.getParameter("daysForward") != null)
+					forward = (new Integer(req.getParameter("daysForward")))
+							.intValue();
+				Calendar day = new GregorianCalendar();
+				dates.add(Day.cutDate(day.getTime()));
+				for (int i = 0; i < forward; i++) {
+					day.add(Calendar.DATE, 1);
+					dates.add(Day.cutDate(day.getTime()));
+				}
+			} else
+				dates.add(new Date());
+
+			Calendar delete_date = new GregorianCalendar();
+			delete_date.add(Calendar.DATE, -c.getDaysToStore().intValue());
+			query = pm.newQuery("select from " + Day.class.getName());
+			query.setFilter("dayToParse < date");
+			query.declareParameters("java.util.Date date");
+			List<Day> results = (List<Day>) query
+					.execute(delete_date.getTime());
+			pm.deletePersistentAll(results);
+
+			for (Date date : dates) {
+				Day d = new Day(date);
+				date = Day.cutDate(date);
+
+				query = pm.newQuery("select from " + Day.class.getName());
+				query.setFilter("dayToParse == date");
+				query.declareParameters("java.util.Date date");
+				results = (List<Day>) query.execute(date);
+				if (results.isEmpty()) {
+					pm.makePersistent(d);
+				} else
+					logger.warning("In DB already present date: "
+							+ date.toString());
+			}
+		} catch (Exception e) {
+			logger.warning("Error to store: " + e.getLocalizedMessage());
+			e.printStackTrace();
+		} finally {
+			pm.close();
+		}
+
+		resp.sendRedirect("/calendar.jsp");
 	}
 }
