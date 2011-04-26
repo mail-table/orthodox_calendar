@@ -33,6 +33,17 @@ public class Day {
 	@Persistent
 	private Date dayToParse;
 	
+	@Persistent
+	private Date pubDate;
+	
+	public void setPubDate(Date pubDate) {
+		this.pubDate = pubDate;
+	}
+
+	public Date getPubDate() {
+		return pubDate;
+	}
+
 	public Date getDayToParse() {
 		return dayToParse;
 	}
@@ -94,6 +105,8 @@ public class Day {
 		dayToParse = Day.cutDate(day);
 		initAllFields();
 		description = new Text(parseDay(day));
+		
+		this.pubDate = new Date();
 	}
 	
 	private void initAllFields() {
