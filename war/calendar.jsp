@@ -12,7 +12,7 @@
     <lastBuildDate><%=(new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z", new Locale("us"))).format(new Date()) %></lastBuildDate>
     <ttl>480</ttl>
     <image>
-        <utl>/ic1.gif</url>
+        <url>/ic1.gif</url>
     </image>
     <managingEditor>mail-table@yandex.ru</managingEditor>
 <%
