@@ -3,6 +3,6 @@
   <cron>
     <url>/orthodox_calendar</url>
     <description>Update calendar</description>
-    <schedule>every 8 hours</schedule>
+    <schedule>every 6 hours</schedule>
   </cron>
 </cronentries>
