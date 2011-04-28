@@ -9,10 +9,6 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 		<servlet-class>klim.orthodox_calendar.Orthodox_calendarServlet</servlet-class>
 	</servlet>
 	<servlet>
-		<servlet-name>Orthodox_index</servlet-name>
-		<servlet-class>klim.orthodox_calendar.Orthodox_indexServlet</servlet-class>
-	</servlet>
-	<servlet>
 		<servlet-name>util</servlet-name>
 		<servlet-class>klim.orthodox_calendar.Orthodox_utilServlet</servlet-class>
 	</servlet>
