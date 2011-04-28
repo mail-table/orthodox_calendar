@@ -9,6 +9,10 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 		<servlet-class>klim.orthodox_calendar.Orthodox_calendarServlet</servlet-class>
 	</servlet>
 	<servlet>
+		<servlet-name>rss</servlet-name>
+		<jsp-file>/calendar.jsp</jsp-file>
+	</servlet>	
+	<servlet>
 		<servlet-name>util</servlet-name>
 		<servlet-class>klim.orthodox_calendar.Orthodox_utilServlet</servlet-class>
 	</servlet>
@@ -17,7 +21,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 		<url-pattern>/orthodox_calendar</url-pattern>
 	</servlet-mapping>
   <servlet-mapping>
-    <servlet-name>Orthodox_calendar</servlet-name>
+    <servlet-name>rss</servlet-name>
     <url-pattern>/rss</url-pattern>
   </servlet-mapping>
 	<servlet-mapping>

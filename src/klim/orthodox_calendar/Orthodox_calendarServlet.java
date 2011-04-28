@@ -17,7 +17,6 @@ public class Orthodox_calendarServlet extends HttpServlet {
 
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
-
 		List<Date> dates = new ArrayList<Date>();
 
 		PersistenceManager pm = PMF.get().getPersistenceManager();
@@ -86,7 +85,12 @@ public class Orthodox_calendarServlet extends HttpServlet {
 		} finally {
 			pm.close();
 		}
-
-		resp.sendRedirect("/calendar.jsp");
+		
+		try {
+			req.getRequestDispatcher("/calendar.jsp").forward(req, resp);
+		}
+		catch (Exception e) {
+			resp.sendRedirect("/calendar.jsp");
+		}
 	}
 }
