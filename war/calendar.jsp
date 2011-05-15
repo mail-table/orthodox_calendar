@@ -10,7 +10,7 @@
     <language>ru</language>
     <pubDate><%=(new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z", new Locale("us"))).format(Day.cutDate(new Date())) %></pubDate>
     <lastBuildDate><%=(new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z", new Locale("us"))).format(new Date()) %></lastBuildDate>
-    <ttl>480</ttl>
+    <ttl>60</ttl>
     <image>
         <url>/ic1.gif</url>
     </image>
