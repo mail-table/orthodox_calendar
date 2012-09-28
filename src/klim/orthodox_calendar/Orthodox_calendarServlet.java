@@ -27,7 +27,7 @@ public class Orthodox_calendarServlet extends HttpServlet {
 			Configure c;
 
 			if (cfg.isEmpty()) {
-				c = new Configure(3, 14);
+				c = new Configure(4, 14);
 			} else
 				c = cfg.get(0);
 
@@ -75,9 +75,7 @@ public class Orthodox_calendarServlet extends HttpServlet {
 				results = (List<Day>) query.execute(date);
 				if (results.isEmpty()) {
 					pm.makePersistent(d);
-				} else
-					logger.warning("In DB already present date: "
-							+ date.toString());
+				}
 			}
 		} catch (Exception e) {
 			logger.warning("Error to store: " + e.getLocalizedMessage());

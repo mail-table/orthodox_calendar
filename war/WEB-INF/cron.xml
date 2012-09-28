@@ -3,7 +3,7 @@
   <cron>
     <url>/orthodox_calendar</url>
     <description>Update calendar</description>
-    <schedule>every 3 hours</schedule>
+    <schedule>every 1 hours</schedule>
     <timezone>Europe/Moscow</timezone>
   </cron>
 </cronentries>
