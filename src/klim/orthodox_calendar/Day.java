@@ -171,7 +171,7 @@ public class Day {
             InputStream is = connection.getInputStream();
             ret += toString(is);
             
-            Pattern p=Pattern.compile("(<div[^>]*id=.block.*)<img src=\"img/line1.gif\"", Pattern.DOTALL);
+            Pattern p=Pattern.compile("(<div[^>]*id=.block.*)<img .*?src=\"img/line.gif\"", Pattern.DOTALL);
             
             Matcher m=p.matcher(ret);
             if ( m.find() ) {
