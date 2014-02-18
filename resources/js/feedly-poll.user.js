@@ -11,7 +11,7 @@
 // @grant          GM_xmlhttpRequest
 // ==/UserScript==
 
-INTERVAL = 1 * 60 * 1000;
+INTERVAL = 5 * 60 * 1000;
 EMAIL = "save-pocket@orthodox-calendar-hrd.appspotmail.com";
 
 function checkSaved(url) {
@@ -24,7 +24,7 @@ function saveToPocked() {
 	var saved_list = document.querySelectorAll('.u0Entry.quicklisted');
 	if ( saved_list && saved_list.length > 0) {
 		try {
-			var top_bookmark = saved_list[0].getAttribute("data-alternate-link");
+			var top_bookmark = saved_list[0].id;
 			var old_top = GM_getValue( "feedly_last_saved", "" );
 
 			if ( old_top != top_bookmark ) {
@@ -32,7 +32,7 @@ function saveToPocked() {
 
 				for (var i = 0; i < saved_list.length; i++) {
 
-					if (old_top == saved_list[i].getAttribute("data-alternate-link"))
+					if (old_top == saved_list[i].id)
 						break;
 
 					var sendData = "email=" + EMAIL + "&" + "url=" + saved_list[i].getAttribute("data-alternate-link");

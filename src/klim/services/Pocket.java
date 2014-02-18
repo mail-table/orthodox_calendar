@@ -20,6 +20,11 @@ import klim.orthodox_calendar.PMF;
 public class Pocket {
 	private static String serviceURL = "";
 	private static String serviceEmail;
+
+	public static String getServiceEmail() {
+		return serviceEmail;
+	}
+
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
 
