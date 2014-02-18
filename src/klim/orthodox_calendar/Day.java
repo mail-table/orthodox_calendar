@@ -29,13 +29,13 @@ public class Day {
 	@PrimaryKey
     @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
     private Long id;
-	
+
 	@Persistent
 	private Date dayToParse;
-	
+
 	@Persistent
 	private Date pubDate;
-	
+
 	public void setPubDate(Date pubDate) {
 		this.pubDate = pubDate;
 	}

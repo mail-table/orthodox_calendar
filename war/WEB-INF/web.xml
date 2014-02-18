@@ -12,13 +12,17 @@
         <servlet-class>klim.orthodox_calendar.Orthodox_utilServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>test</servlet-name>
+        <servlet-name>savePocket</servlet-name>
         <servlet-class>klim.services.PocketServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>mailhandler</servlet-name>
+        <servlet-class>klim.services.MailHandlerServlet</servlet-class>
     </servlet>
 
     <servlet-mapping>
-        <servlet-name>test</servlet-name>
-        <url-pattern>/test</url-pattern>
+        <servlet-name>savePocket</servlet-name>
+        <url-pattern>/savePocket</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>Orthodox_calendar</servlet-name>
@@ -32,6 +36,20 @@
         <servlet-name>util</servlet-name>
         <url-pattern>/util</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>mailhandler</servlet-name>
+        <url-pattern>/_ah/mail/*</url-pattern>
+    </servlet-mapping>
+
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>mail</web-resource-name>
+            <url-pattern>/_ah/mail/*</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>admin</role-name>
+        </auth-constraint>
+    </security-constraint>
 
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>

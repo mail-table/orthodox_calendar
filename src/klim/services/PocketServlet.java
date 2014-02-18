@@ -4,6 +4,7 @@ import klim.orthodox_calendar.Day;
 import klim.orthodox_calendar.PMF;
 import klim.services.Pocket;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 
 import java.io.IOException;
@@ -19,9 +20,19 @@ import java.util.List;
 
 public class PocketServlet extends HttpServlet {
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
-	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-		Pocket p = new Pocket("klim.iv@gmail.com");
-		p.sendEmail();
-	    resp.sendRedirect("/index.jsp");
+	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+		String sendFrom = req.getParameter("email") == null ? "" : req.getParameter("email");
+		String url = req.getParameter("url") == null ? "" : req.getParameter("url");
+		Pocket p = new Pocket("add@getpocket.com");
+		p.sendEmail("save url", url, "add@getpocket.com", sendFrom);
+		ServletOutputStream out = resp.getOutputStream();
+		out.println("<title>Email</title>"
+				+ "<body>"
+				+ "<ol>"
+				+ "<li>to=" + p.toString() + "</li>"
+				+ "<li>from=" + sendFrom + "</li>"
+				+ "<li>url=" + url + "</li>"
+				+ "</ol>"
+				+ "</body>");
 	}
 }
