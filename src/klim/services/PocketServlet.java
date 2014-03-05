@@ -24,12 +24,12 @@ public class PocketServlet extends HttpServlet {
 		String sendFrom = req.getParameter("email") == null ? "" : req.getParameter("email");
 		String url = req.getParameter("url") == null ? "" : req.getParameter("url");
 		Pocket p = new Pocket("add@getpocket.com");
-		p.sendEmail("save url", url, p.getServiceEmail(), sendFrom);
+		p.sendEmail("save url", url, Pocket.getServiceEmail(), sendFrom);
 		ServletOutputStream out = resp.getOutputStream();
 		out.println("<title>Email</title>"
 				+ "<body>"
 				+ "<ol>"
-				+ "<li>to=" + p.getServiceEmail() + "</li>"
+				+ "<li>to=" + Pocket.getServiceEmail() + "</li>"
 				+ "<li>from=" + sendFrom + "</li>"
 				+ "<li>url=" + url + "</li>"
 				+ "</ol>"

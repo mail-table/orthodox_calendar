@@ -24,7 +24,7 @@ function saveToPocked() {
 	var saved_list = document.querySelectorAll('.u0Entry.quicklisted');
 	if ( saved_list && saved_list.length > 0) {
 		try {
-			var top_bookmark = saved_list[0].id;
+			var top_bookmark = saved_list[0].getAttribute("data-alternate-link");
 			var old_top = GM_getValue( "feedly_last_saved", "" );
 
 			if ( old_top != top_bookmark ) {
@@ -32,7 +32,7 @@ function saveToPocked() {
 
 				for (var i = 0; i < saved_list.length; i++) {
 
-					if (old_top == saved_list[i].id)
+					if (old_top == saved_list[i].getAttribute("data-alternate-link"))
 						break;
 
 					var sendData = "email=" + EMAIL + "&" + "url=" + saved_list[i].getAttribute("data-alternate-link");
