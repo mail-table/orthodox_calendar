@@ -13,6 +13,7 @@
     <include path="/**.png" />
     <include path="/**.gif" />
     <include path="/**.jpg" />
+    <include path="/**.ico" />
   </static-files>
 
   <inbound-services>
