@@ -236,7 +236,7 @@ public class Day {
 	    StringBuilder outputBuilder = new StringBuilder();
 	    if (inputStream != null) {
 	      BufferedReader reader =
-	          new BufferedReader(new InputStreamReader(inputStream,"windows-1251"/*"UTF8"*/));
+	          new BufferedReader(new InputStreamReader(inputStream,/*"windows-1251"*/"UTF8"));
 	      while (null != (string = reader.readLine())) {
 	        outputBuilder.append(string).append('\n');
 	      }
