@@ -9,9 +9,9 @@ import javax.jdo.annotations.PrimaryKey;
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class Configure {
 	@PrimaryKey
-    @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-    private Long id;
-	
+	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
+	private Long id;
+
 	@Persistent
 	private Integer daysForward;
 
@@ -41,9 +41,9 @@ public class Configure {
 	public void setDaysToStore(Integer daysToStore) {
 		this.daysToStore = daysToStore;
 	}
-	
+
 	public Configure(int forward, int store) {
-		this.daysForward=forward;
-		this.daysToStore=store;
+		this.daysForward = forward;
+		this.daysToStore = store;
 	}
 }

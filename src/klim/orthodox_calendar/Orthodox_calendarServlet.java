@@ -83,11 +83,10 @@ public class Orthodox_calendarServlet extends HttpServlet {
 		} finally {
 			pm.close();
 		}
-		
+
 		try {
 			req.getRequestDispatcher("/calendar.jsp").forward(req, resp);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			resp.sendRedirect("/calendar.jsp");
 		}
 	}

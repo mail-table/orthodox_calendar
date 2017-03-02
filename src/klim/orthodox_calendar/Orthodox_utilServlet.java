@@ -11,22 +11,23 @@ import java.util.List;
 
 public class Orthodox_utilServlet extends HttpServlet {
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
 
 		Day d = new Day(new java.util.Date());
 		PersistenceManager pm = PMF.get().getPersistenceManager();
-	    try {
-	        pm.makePersistent(d);
-	    	
-	    	String query = "select from " + Day.class.getName();
-	        List<Day> days = (List<Day>) pm.newQuery(query).execute();
-	        pm.deletePersistentAll(days);
-	    } catch (Exception e) {
-	    	System.out.println(e.getMessage());
-	    } finally {
-	        pm.close();
-	    }
-	    resp.sendRedirect("/index.jsp");
+		try {
+			pm.makePersistent(d);
+
+			String query = "select from " + Day.class.getName();
+			List<Day> days = (List<Day>) pm.newQuery(query).execute();
+			pm.deletePersistentAll(days);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		} finally {
+			pm.close();
+		}
+		resp.sendRedirect("/index.jsp");
 	}
 }
