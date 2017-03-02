@@ -111,7 +111,7 @@ public class Day {
 	
 	private void initAllFields() {
 		if (this.isInitialized == null || !isInitialized.booleanValue()) {
-			this.c=new SimpleDateFormat("MMMdd", new DateFormatSymbols(new java.util.Locale("en")));
+			this.c=new SimpleDateFormat("D", new DateFormatSymbols(new java.util.Locale("en")));
 			this.c1=new SimpleDateFormat("d MMMM", new DateFormatSymbols(new java.util.Locale("ru")));
 			this.c2=new SimpleDateFormat("d MMMM '20'yy EEEE", new DateFormatSymbols(new java.util.Locale("ru")));
 
@@ -128,8 +128,8 @@ public class Day {
 	public String getLink() {
 		if (this.link == null) {
 			this.initAllFields();
-			this.link = "http://calendar.rop.ru/mes1/" + 
-				c.format(this.calendarDay.getTime()).toLowerCase() + ".html";
+			this.link = "http://calendar.rop.ru/?idd=" +
+				c.format(this.calendarDay.getTime()).toLowerCase();
 		}
 		return this.link;
 	}
@@ -162,7 +162,7 @@ public class Day {
 
 		try {
 			this.setCalendarDay(day);
-			String toOpen="http://calendar.rop.ru/mes1/" + c.format(getCalendarDay().getTime()).toLowerCase() + ".html";
+			String toOpen="http://calendar.rop.ru/?idd=" + c.format(getCalendarDay().getTime()).toLowerCase();
 			URL url = new URL(toOpen);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setInstanceFollowRedirects(true);
@@ -171,18 +171,18 @@ public class Day {
             InputStream is = connection.getInputStream();
             ret += toString(is);
             
-            Pattern p=Pattern.compile("(<td[^>]*id=.center_td.*>.*)<img[^>]*src=\"img/line.*gif\"", Pattern.DOTALL);
+            Pattern p=Pattern.compile("(<td[^>]*id=.center_td.*>.*)<img[^>]*src=.img/line.*gif.", Pattern.DOTALL);
             
             Matcher m=p.matcher(ret);
             if ( m.find() ) {
 	            ret = m.group(1);
 	            ret += "</div>";
 
-            	Pattern p1 = Pattern.compile("href=\"([^\"]*)\"", Pattern.DOTALL);
+                Pattern p1 = Pattern.compile("href=\"([^\"]*)\"", Pattern.DOTALL);
             	Matcher matcher = p1.matcher(ret);
             	StringBuffer buf = new StringBuffer();
             	while (matcher.find()) {
-            	    String replaceStr = "href=\"http://calendar.rop.ru/mes1/" + matcher.group(1) + "\"";
+		    String replaceStr = "href=\"http://calendar.rop.ru/" + matcher.group(1) + "\"";
             	    matcher.appendReplacement(buf, replaceStr);
             	}
             	matcher.appendTail(buf);
@@ -215,7 +215,6 @@ public class Day {
 
 		this.calendarDay = new GregorianCalendar();
 		this.calendarDay.setTime(calendarDay.getTime());
-		this.calendarDay.add(Calendar.DATE, -13);		
 		
 		this.title=null;
 		this.link=null;

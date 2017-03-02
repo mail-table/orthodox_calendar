@@ -33,6 +33,10 @@
         <url-pattern>/rss</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>rss</servlet-name>
+        <url-pattern>/rss-new</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>util</servlet-name>
         <url-pattern>/util</url-pattern>
     </servlet-mapping>
