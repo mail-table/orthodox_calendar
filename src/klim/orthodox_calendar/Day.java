@@ -130,8 +130,8 @@ public class Day {
 	public String getLink() {
 		if (this.link == null) {
 			this.initAllFields();
-			this.link = "http://calendar.rop.ru/?idd="
-					+ c.format(this.calendarDay.getTime()).toLowerCase();
+			this.link = "https://calendar.rop.ru/?idd="
+					+ c.format(this.calendarNewDay.getTime()).toLowerCase();
 		}
 		return this.link;
 	}
@@ -163,12 +163,18 @@ public class Day {
 
 		try {
 			this.setCalendarDay(day);
-			String toOpen = "http://calendar.rop.ru/?idd="
+			String toOpen = "https://calendar.rop.ru/?idd="
 					+ c.format(getCalendarDay().getTime()).toLowerCase();
 			URL url = new URL(toOpen);
 			HttpURLConnection connection = (HttpURLConnection) url
 					.openConnection();
 			connection.setInstanceFollowRedirects(true);
+
+			if (connection.getResponseCode() == HttpURLConnection.HTTP_MOVED_PERM
+					|| connection.getResponseCode() == HttpURLConnection.HTTP_MOVED_PERM) {
+				url = new URL(connection.getHeaderField("Location"));
+				connection = (HttpURLConnection) url.openConnection();
+			}
 
 			ret = "";
 			InputStream is = connection.getInputStream();
@@ -188,7 +194,7 @@ public class Day {
 				Matcher matcher = p1.matcher(ret);
 				StringBuffer buf = new StringBuffer();
 				while (matcher.find()) {
-					String replaceStr = "href=\"http://calendar.rop.ru/"
+					String replaceStr = "href=\"https://calendar.rop.ru/"
 							+ matcher.group(1) + "\"";
 					matcher.appendReplacement(buf, replaceStr);
 				}
