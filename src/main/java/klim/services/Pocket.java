@@ -1,5 +1,7 @@
 package klim.services;
 
+import static com.googlecode.objectify.ObjectifyService.ofy;
+
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Properties;
@@ -14,8 +16,10 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import com.google.appengine.api.utils.SystemProperty;
-import javax.jdo.*;
-import klim.orthodox_calendar.PMF;
+
+import com.googlecode.objectify.ObjectifyService;
+import com.googlecode.objectify.Result;
+import com.googlecode.objectify.Key;
 
 public class Pocket {
 	private static String serviceURL = "";
@@ -41,13 +45,7 @@ public class Pocket {
 	}
 
 	public boolean sendEmail(String subject, String message, String addr, String fromAddr) {
-		PersistenceManager pm = PMF.get().getPersistenceManager();
-
-		Query q = pm.newQuery("select from " + PocketUrl.class.getName());
-		q.setFilter("url == urlParam");
-		q.declareParameters("String urlParam");
-
-		List<PocketUrl> results = (List<PocketUrl>) q.execute(message);
+		List<PocketUrl> results = ofy().load().type(PocketUrl.class).list();
 
 		//	save only new urls
 		if (results.size() == 0) {
@@ -62,7 +60,7 @@ public class Pocket {
 				Transport.send(msg);
 
 				PocketUrl url = new PocketUrl(message);
-				pm.makePersistent(url);
+				ofy().save().entity(url);
 			} catch (AddressException e) {
 				logger.warning(e.getMessage());
 			} catch (MessagingException e) {

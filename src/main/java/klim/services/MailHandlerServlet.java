@@ -1,5 +1,7 @@
 package klim.services;
 
+import static com.googlecode.objectify.ObjectifyService.ofy;
+
 import java.io.IOException;
 import java.util.logging.Logger;
 
@@ -11,16 +13,20 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Properties; 
 
-import javax.jdo.PersistenceManager;
-import javax.jdo.Query;
+import com.googlecode.objectify.annotation.Entity;
+import com.googlecode.objectify.annotation.Id;
+import com.googlecode.objectify.annotation.Index;
+
+import klim.orthodox_calendar.Configure;
+
+import com.googlecode.objectify.annotation.Ignore;
+
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session; 
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-
-import klim.orthodox_calendar.PMF;
 
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
@@ -29,12 +35,10 @@ import com.google.appengine.api.utils.SystemProperty;
 public class MailHandlerServlet extends HttpServlet {
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-		PersistenceManager pm = PMF.get().getPersistenceManager();
 		Properties props = new Properties(); 
         Session session = Session.getDefaultInstance(props, null);
 
-		Query q = pm.newQuery("select from " + AdminEmail.class.getName());
-		List<AdminEmail> results = (List<AdminEmail>) q.execute();
+		List<AdminEmail> results = ofy().load().type(AdminEmail.class).list();
 
 		if (results.size() > 0 && results.get(0).getEmail() != "empty.appspotmail.com") {
 	        try {
@@ -50,7 +54,7 @@ public class MailHandlerServlet extends HttpServlet {
 		} else {
 			//	create empty email for edit it in AppEngine admin console
 			AdminEmail e = new AdminEmail("empty.appspotmail.com");
-			pm.makePersistent(e);
+			ofy().save().entity(e);
 		}
 	}
 }

@@ -1,6 +1,6 @@
 <%@page trimDirectiveWhitespaces="true" %>
 <%@page contentType="text/html;charset=UTF-8" language="java" %>
-<%@page import="java.util.List, javax.jdo.PersistenceManager, klim.orthodox_calendar.PMF, klim.orthodox_calendar.Orthodox_calendarServlet, klim.orthodox_calendar.Day, java.text.SimpleDateFormat, java.util.*" %>
+<%@page import="java.util.List, com.googlecode.objectify.ObjectifyService, com.googlecode.objectify.Result, klim.orthodox_calendar.Orthodox_calendarServlet, klim.orthodox_calendar.Day, java.text.SimpleDateFormat, java.util.*" %>
 <html>
   <body>
   	<%=(new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z", new Locale("us"))).format(Day.cutDate(new Date())) %> <br>
@@ -8,8 +8,7 @@
     <img src="/ic1.gif" />
     <ul>
 <%
-    PersistenceManager pm = PMF.get().getPersistenceManager();
-    List<Day> days = (List<Day>) pm.newQuery(PMF.query).execute();
+    List<Day> days = com.googlecode.objectify.ObjectifyService.ofy().load().type(Day.class).list();
     if (!days.isEmpty()) {
 %>
 <%

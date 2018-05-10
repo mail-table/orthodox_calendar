@@ -3,13 +3,23 @@ package klim.orthodox_calendar;
 import java.io.IOException;
 
 import javax.servlet.http.*;
-import javax.jdo.*;
+
+import com.googlecode.objectify.annotation.Entity;
+import com.googlecode.objectify.annotation.Id;
+import com.googlecode.objectify.annotation.Index;
+import com.googlecode.objectify.annotation.Ignore;
+
+import com.googlecode.objectify.ObjectifyService;
+import com.googlecode.objectify.Result;
+import com.googlecode.objectify.Key;
 
 import java.util.logging.Logger;
 import klim.orthodox_calendar.Day;
-import klim.orthodox_calendar.PMF;
+import klim.orthodox_calendar.Configure;
 import java.util.*;
 import java.text.*;
+
+import static com.googlecode.objectify.ObjectifyService.ofy;
 
 @SuppressWarnings("serial")
 public class Orthodox_calendarServlet extends HttpServlet {
@@ -19,11 +29,8 @@ public class Orthodox_calendarServlet extends HttpServlet {
 			throws IOException {
 		List<Date> dates = new ArrayList<Date>();
 
-		PersistenceManager pm = PMF.get().getPersistenceManager();
 		try {
-			Query query = pm.newQuery("select from "
-					+ Configure.class.getName());
-			List<Configure> cfg = (List<Configure>) query.execute();
+			List<Configure> cfg = ofy().load().type(Configure.class).list();
 			Configure c;
 
 			if (cfg.isEmpty()) {
@@ -56,32 +63,25 @@ public class Orthodox_calendarServlet extends HttpServlet {
 			} else
 				dates.add(new Date());
 
+			// delete old days
 			Calendar delete_date = new GregorianCalendar();
 			delete_date.add(Calendar.DATE, -c.getDaysToStore().intValue());
-			query = pm.newQuery("select from " + Day.class.getName());
-			query.setFilter("dayToParse < date");
-			query.declareParameters("java.util.Date date");
-			List<Day> results = (List<Day>) query
-					.execute(delete_date.getTime());
-			pm.deletePersistentAll(results);
+			Iterable<Key<Day>> deleteKeys = ofy().load().type(Day.class).filter("dayToParse < ", delete_date.getTime()).keys();
+			ofy().delete().keys(deleteKeys);
 
 			for (Date date : dates) {
-				Day d = new Day(date);
 				date = Day.cutDate(date);
 
-				query = pm.newQuery("select from " + Day.class.getName());
-				query.setFilter("dayToParse == date");
-				query.declareParameters("java.util.Date date");
-				results = (List<Day>) query.execute(date);
-				if (results.isEmpty()) {
-					pm.makePersistent(d);
+				List<Day> res = ofy().load().type(Day.class).filter("dayToParse", date).list();
+				if (res.isEmpty()) {
+					Day d = new Day(date);
+					ofy().save().entity(d).now();
 				}
 			}
 		} catch (Exception e) {
 			logger.warning("Error to store: " + e.getLocalizedMessage());
 			e.printStackTrace();
 		} finally {
-			pm.close();
 		}
 
 		try {

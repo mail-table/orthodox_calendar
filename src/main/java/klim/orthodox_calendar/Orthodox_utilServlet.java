@@ -3,7 +3,10 @@ package klim.orthodox_calendar;
 import java.io.IOException;
 import java.util.logging.Logger;
 
-import javax.jdo.PersistenceManager;
+import com.googlecode.objectify.ObjectifyService;
+import com.googlecode.objectify.Result;
+import com.googlecode.objectify.Key;
+
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -16,17 +19,9 @@ public class Orthodox_utilServlet extends HttpServlet {
 			throws IOException {
 
 		Day d = new Day(new java.util.Date());
-		PersistenceManager pm = PMF.get().getPersistenceManager();
 		try {
-			pm.makePersistent(d);
-
-			String query = "select from " + Day.class.getName();
-			List<Day> days = (List<Day>) pm.newQuery(query).execute();
-			pm.deletePersistentAll(days);
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
 		} finally {
-			pm.close();
 		}
 		resp.sendRedirect("/index.jsp");
 	}

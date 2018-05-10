@@ -11,28 +11,25 @@ import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import java.util.Date;
-import javax.jdo.annotations.IdGeneratorStrategy;
-import javax.jdo.annotations.IdentityType;
-import javax.jdo.annotations.PersistenceCapable;
-import javax.jdo.annotations.Persistent;
-import javax.jdo.annotations.NotPersistent;
-import javax.jdo.annotations.PrimaryKey;
-import com.google.appengine.api.datastore.Text;
 
-@PersistenceCapable(identityType = IdentityType.APPLICATION)
+import com.googlecode.objectify.annotation.Entity;
+import com.googlecode.objectify.annotation.Id;
+import com.googlecode.objectify.annotation.Ignore;
+import com.googlecode.objectify.annotation.Index;
+
+@Entity
 public class Day {
-	@PrimaryKey
-	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
+	@Id
 	private Long id;
 
-	@Persistent
+	@Index
 	private Date dayToParse;
 
-	@Persistent
 	private Date pubDate;
 
 	public void setPubDate(Date pubDate) {
@@ -52,23 +49,22 @@ public class Day {
 		initAllFields();
 	}
 
-	@NotPersistent
+	@Ignore
 	private Calendar calendarDay;
 
-	@NotPersistent
+	@Ignore
 	private Calendar calendarNewDay;
 
-	@NotPersistent
+	@Ignore
 	private String title;
 
-	@NotPersistent
+	@Ignore
 	private String link;
 
-	@NotPersistent
+	@Ignore
 	private String comments;
 
-	@Persistent
-	private Text description;
+	private String description;
 
 	public Long getId() {
 		return id;
@@ -80,32 +76,35 @@ public class Day {
 
 	public String getDescription(boolean env) {
 		if (env)
-			return escapeHtml(description.getValue());
-		return description.getValue();
+			return escapeHtml(description);
+		return description;
 	}
 
-	public void setDescription(Text description) {
+	public void setDescription(String description) {
 		this.description = description;
 	}
 
-	@NotPersistent
+	@Ignore
 	private SimpleDateFormat c;
 
-	@NotPersistent
+	@Ignore
 	private SimpleDateFormat c1;
 
-	@NotPersistent
+	@Ignore
 	private SimpleDateFormat c2;
 
-	@NotPersistent
+	@Ignore
 	private Boolean isInitialized;
 
 	public Day(Date day) {
 		dayToParse = Day.cutDate(day);
 		initAllFields();
-		description = new Text(parseDay(day));
+		description = new String(parseDay(day));
 
 		this.pubDate = new Date();
+	}
+
+	public Day() {
 	}
 
 	private void initAllFields() {
@@ -128,28 +127,24 @@ public class Day {
 	}
 
 	public String getLink() {
-		if (this.link == null) {
-			this.initAllFields();
-			this.link = "https://calendar.rop.ru/?idd="
-					+ c.format(this.calendarNewDay.getTime()).toLowerCase();
-		}
+		this.initAllFields();
+		this.link = "https://calendar.rop.ru/?idd="
+				+ c.format(this.calendarNewDay.getTime()).toLowerCase();
+
 		return this.link;
 	}
 
 	public String getTitle() {
-		if (this.title == null) {
-			this.initAllFields();
-			this.title = this.c1.format(this.calendarDay.getTime()) + " / "
-					+ this.c2.format(this.calendarNewDay.getTime());
-		}
+		this.initAllFields();
+		this.title = this.c1.format(this.calendarDay.getTime()) + " / "
+				+ this.c2.format(this.calendarNewDay.getTime());
 		return this.title;
 	}
 
 	public String getComments() {
-		if (this.comments == null) {
-			this.initAllFields();
-			this.comments = getLink();
-		}
+		this.initAllFields();
+		this.comments = getLink();
+
 		return this.comments;
 	}
 
@@ -166,6 +161,7 @@ public class Day {
 			String toOpen = "https://calendar.rop.ru/?idd="
 					+ c.format(getCalendarDay().getTime()).toLowerCase();
 			URL url = new URL(toOpen);
+
 			HttpURLConnection connection = (HttpURLConnection) url
 					.openConnection();
 			connection.setInstanceFollowRedirects(true);
@@ -203,7 +199,7 @@ public class Day {
 			} else
 				ret = "";
 
-			description = new Text(ret);
+			description = new String(ret);
 		} catch (MalformedURLException e) {
 			System.err.println(e);
 		} catch (IOException e) {
@@ -232,7 +228,7 @@ public class Day {
 		this.title = null;
 		this.link = null;
 		this.comments = null;
-		this.description = new Text("");
+		this.description = new String("");
 	}
 
 	private String escapeHtml(String html) {
