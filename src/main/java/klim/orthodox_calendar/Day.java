@@ -15,6 +15,11 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
 import java.util.Date;
 
 import com.googlecode.objectify.annotation.Entity;
@@ -24,242 +29,248 @@ import com.googlecode.objectify.annotation.Index;
 
 @Entity
 public class Day {
-	@Id
-	private Long id;
+  @Id private Long id;
 
-	@Index
-	private Date dayToParse;
+  @Index private Date dayToParse;
 
-	private Date pubDate;
+  private Date pubDate;
 
-	public void setPubDate(Date pubDate) {
-		this.pubDate = pubDate;
-	}
+  public void setPubDate(Date pubDate) {
+    this.pubDate = pubDate;
+  }
 
-	public Date getPubDate() {
-		return pubDate;
-	}
+  public Date getPubDate() {
+    return pubDate;
+  }
 
-	public Date getDayToParse() {
-		return dayToParse;
-	}
+  public Date getDayToParse() {
+    return dayToParse;
+  }
 
-	public void setDayToParse(Date dayToParse) {
-		this.dayToParse = dayToParse;
-		initAllFields();
-	}
+  public void setDayToParse(Date dayToParse) {
+    this.dayToParse = dayToParse;
+    initAllFields();
+  }
 
-	@Ignore
-	private Calendar calendarDay;
+  @Ignore private Calendar calendarDay;
 
-	@Ignore
-	private Calendar calendarNewDay;
+  @Ignore private Calendar calendarNewDay;
 
-	@Ignore
-	private String title;
+  @Ignore private String title;
 
-	@Ignore
-	private String link;
+  @Ignore private String link;
 
-	@Ignore
-	private String comments;
+  @Ignore private String comments;
 
-	private String description;
+  private String description;
 
-	public Long getId() {
-		return id;
-	}
+  public Long getId() {
+    return id;
+  }
 
-	public String getDescription() {
-		return getDescription(false);
-	}
+  public String getDescription() {
+    return getDescription(false);
+  }
 
-	public String getDescription(boolean env) {
-		if (env)
-			return escapeHtml(description);
-		return description;
-	}
+  public String getDescription(boolean env) {
+    if (env) return escapeHtml(description);
+    return description;
+  }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+  public void setDescription(String description) {
+    this.description = description;
+  }
 
-	@Ignore
-	private SimpleDateFormat c;
+  @Ignore private SimpleDateFormat c;
 
-	@Ignore
-	private SimpleDateFormat c1;
+  @Ignore private SimpleDateFormat c1;
 
-	@Ignore
-	private SimpleDateFormat c2;
+  @Ignore private SimpleDateFormat c2;
 
-	@Ignore
-	private Boolean isInitialized;
+  @Ignore private Boolean isInitialized;
 
-	public Day(Date day) {
-		dayToParse = Day.cutDate(day);
-		initAllFields();
-		description = new String(parseDay(day));
+  public Day(Date day) {
+    dayToParse = Day.cutDate(day);
+    initAllFields();
+    description = new String(parseDay(day));
 
-		this.pubDate = new Date();
-	}
+    this.pubDate = new Date();
+  }
 
-	public Day() {
-	}
+  public Day() {}
 
-	private void initAllFields() {
-		if (this.isInitialized == null || !isInitialized.booleanValue()) {
-			this.c = new SimpleDateFormat("D", new DateFormatSymbols(
-					new java.util.Locale("en")));
-			this.c1 = new SimpleDateFormat("d MMMM", new DateFormatSymbols(
-					new java.util.Locale("ru")));
-			this.c2 = new SimpleDateFormat("d MMMM '20'yy EEEE",
-					new DateFormatSymbols(new java.util.Locale("ru")));
+  private void initAllFields() {
+    if (this.isInitialized == null || !isInitialized.booleanValue()) {
+      this.c = new SimpleDateFormat("D", new DateFormatSymbols(new java.util.Locale("en")));
+      this.c1 = new SimpleDateFormat("d MMMM", new DateFormatSymbols(new java.util.Locale("ru")));
+      this.c2 =
+          new SimpleDateFormat(
+              "d MMMM '20'yy EEEE", new DateFormatSymbols(new java.util.Locale("ru")));
 
-			this.calendarNewDay = new GregorianCalendar();
-			this.calendarNewDay.setTime(dayToParse);
-			this.calendarDay = new GregorianCalendar();
-			this.calendarDay.setTime(dayToParse);
-			this.calendarDay.add(Calendar.DATE, -13);
+      this.calendarNewDay = new GregorianCalendar();
+      this.calendarNewDay.setTime(dayToParse);
+      this.calendarDay = new GregorianCalendar();
+      this.calendarDay.setTime(dayToParse);
+      this.calendarDay.add(Calendar.DATE, -13);
 
-			this.isInitialized = new Boolean(true);
-		}
-	}
+      this.isInitialized = new Boolean(true);
+    }
+  }
 
-	public String getLink() {
-		this.initAllFields();
-		this.link = "https://calendar.rop.ru/?idd="
-				+ c.format(this.calendarNewDay.getTime()).toLowerCase();
+  public String getLink() {
+    this.initAllFields();
+    this.link =
+        "https://calendar.rop.ru/?idd=" + c.format(this.calendarNewDay.getTime()).toLowerCase();
 
-		return this.link;
-	}
+    return this.link;
+  }
 
-	public String getTitle() {
-		this.initAllFields();
-		this.title = this.c1.format(this.calendarDay.getTime()) + " / "
-				+ this.c2.format(this.calendarNewDay.getTime());
-		return this.title;
-	}
+  public String getTitle() {
+    this.initAllFields();
+    this.title =
+        this.c1.format(this.calendarDay.getTime())
+            + " / "
+            + this.c2.format(this.calendarNewDay.getTime());
+    return this.title;
+  }
 
-	public String getComments() {
-		this.initAllFields();
-		this.comments = getLink();
+  public String getComments() {
+    this.initAllFields();
+    this.comments = getLink();
 
-		return this.comments;
-	}
+    return this.comments;
+  }
 
-	public String parseDay() {
-		return parseDay(new Date());
-	}
+  public String parseDay() {
+    return parseDay(new Date());
+  }
 
-	public String parseDay(Date day) {
-		String ret = new String();
-		setCalendarDay(day);
+  public String parseDay(Date day) {
+    String ret = new String();
+    setCalendarDay(day);
 
-		try {
-			this.setCalendarDay(day);
-			String toOpen = "https://calendar.rop.ru/?idd="
-					+ c.format(getCalendarDay().getTime()).toLowerCase();
-			URL url = new URL(toOpen);
+    javax.net.ssl.TrustManager[] trustAllCerts =
+        new TrustManager[] {
+          new javax.net.ssl.X509TrustManager() {
+            public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+              return null;
+            }
 
-			HttpURLConnection connection = (HttpURLConnection) url
-					.openConnection();
-			connection.setInstanceFollowRedirects(true);
+            public void checkClientTrusted(
+                java.security.cert.X509Certificate[] certs, String authType) {}
 
-			if (connection.getResponseCode() == HttpURLConnection.HTTP_MOVED_PERM
-					|| connection.getResponseCode() == HttpURLConnection.HTTP_MOVED_PERM) {
-				url = new URL(connection.getHeaderField("Location"));
-				connection = (HttpURLConnection) url.openConnection();
-			}
+            public void checkServerTrusted(
+                java.security.cert.X509Certificate[] certs, String authType) {}
+          }
+        };
 
-			ret = "";
-			InputStream is = connection.getInputStream();
-			ret += toString(is);
+    try {
+      javax.net.ssl.SSLContext sc = javax.net.ssl.SSLContext.getInstance("SSL");
+      sc.init(null, trustAllCerts, new java.security.SecureRandom());
+      HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
 
-			Pattern p = Pattern.compile(
-					"(<td[^>]*id=.center_td.*>.*)<img[^>]*src=.img/line.*gif.",
-					Pattern.DOTALL);
+      try {
+        this.setCalendarDay(day);
+        String toOpen =
+            "https://calendar.rop.ru/?idd=" + c.format(getCalendarDay().getTime()).toLowerCase();
+        URL url = new URL(toOpen);
 
-			Matcher m = p.matcher(ret);
-			if (m.find()) {
-				ret = m.group(1);
-				ret += "</div>";
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setInstanceFollowRedirects(true);
 
-				Pattern p1 = Pattern.compile("href=\"([^\"]*)\"",
-						Pattern.DOTALL);
-				Matcher matcher = p1.matcher(ret);
-				StringBuffer buf = new StringBuffer();
-				while (matcher.find()) {
-					String replaceStr = "href=\"https://calendar.rop.ru/"
-							+ matcher.group(1) + "\"";
-					matcher.appendReplacement(buf, replaceStr);
-				}
-				matcher.appendTail(buf);
-				ret = buf.toString();
-			} else
-				ret = "";
+        if (connection.getResponseCode() == HttpURLConnection.HTTP_MOVED_PERM
+            || connection.getResponseCode() == HttpURLConnection.HTTP_MOVED_PERM) {
+          url = new URL(connection.getHeaderField("Location"));
+          connection = (HttpURLConnection) url.openConnection();
+        }
 
-			description = new String(ret);
-		} catch (MalformedURLException e) {
-			System.err.println(e);
-		} catch (IOException e) {
-			System.err.println(e);
-		}
+        ret = "";
+        InputStream is = connection.getInputStream();
+        ret += toString(is);
 
-		return ret;
-	}
+        Pattern p =
+            Pattern.compile(
+                "(<td[^>]*id=.center_td.*>.*)<img[^>]*src=.img/line.*gif.", Pattern.DOTALL);
 
-	public Calendar getCalendarDay() {
-		return this.calendarDay;
-	}
+        Matcher m = p.matcher(ret);
+        if (m.find()) {
+          ret = m.group(1);
+          ret += "</div>";
 
-	public void setCalendarDay(Date calendarDay) {
-		Calendar tmp = new GregorianCalendar();
-		tmp.setTime(calendarDay);
-		setCalendarDay(tmp);
-	}
+          Pattern p1 = Pattern.compile("href=\"([^\"]*)\"", Pattern.DOTALL);
+          Matcher matcher = p1.matcher(ret);
+          StringBuffer buf = new StringBuffer();
+          while (matcher.find()) {
+            String replaceStr = "href=\"https://calendar.rop.ru/" + matcher.group(1) + "\"";
+            matcher.appendReplacement(buf, replaceStr);
+          }
+          matcher.appendTail(buf);
+          ret = buf.toString();
+        } else ret = "";
 
-	public void setCalendarDay(Calendar calendarDay) {
-		this.calendarNewDay = calendarDay;
+        description = new String(ret);
+      } catch (MalformedURLException e) {
+        System.err.println(e);
+      } catch (IOException e) {
+        System.err.println(e);
+      }
+    } catch (Exception e) {
+      System.err.println(e);
+    }
 
-		this.calendarDay = new GregorianCalendar();
-		this.calendarDay.setTime(calendarDay.getTime());
+    return ret;
+  }
 
-		this.title = null;
-		this.link = null;
-		this.comments = null;
-		this.description = new String("");
-	}
+  public Calendar getCalendarDay() {
+    return this.calendarDay;
+  }
 
-	private String escapeHtml(String html) {
-		if (html == null) {
-			return null;
-		}
-		return html.replaceAll("&", "&amp;").replaceAll("<", "&lt;")
-				.replaceAll(">", "&gt;");
-	}
+  public void setCalendarDay(Date calendarDay) {
+    Calendar tmp = new GregorianCalendar();
+    tmp.setTime(calendarDay);
+    setCalendarDay(tmp);
+  }
 
-	private String toString(InputStream inputStream) throws IOException {
-		String string;
-		StringBuilder outputBuilder = new StringBuilder();
-		if (inputStream != null) {
-			BufferedReader reader = new BufferedReader(new InputStreamReader(
-					inputStream,/* "windows-1251" */"UTF8"));
-			while (null != (string = reader.readLine())) {
-				outputBuilder.append(string).append('\n');
-			}
-		}
-		return outputBuilder.toString();
-	}
+  public void setCalendarDay(Calendar calendarDay) {
+    this.calendarNewDay = calendarDay;
 
-	public static final Date cutDate(Date date) {
-		Calendar c = Calendar.getInstance();
-		c.setTime(date);
-		c.set(Calendar.HOUR_OF_DAY, 0);
-		c.set(Calendar.MINUTE, 0);
-		c.set(Calendar.SECOND, 0);
-		c.set(Calendar.MILLISECOND, 0);
+    this.calendarDay = new GregorianCalendar();
+    this.calendarDay.setTime(calendarDay.getTime());
 
-		return c.getTime();
-	}
+    this.title = null;
+    this.link = null;
+    this.comments = null;
+    this.description = new String("");
+  }
+
+  private String escapeHtml(String html) {
+    if (html == null) {
+      return null;
+    }
+    return html.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+  }
+
+  private String toString(InputStream inputStream) throws IOException {
+    String string;
+    StringBuilder outputBuilder = new StringBuilder();
+    if (inputStream != null) {
+      BufferedReader reader =
+          new BufferedReader(new InputStreamReader(inputStream, /* "windows-1251" */ "UTF8"));
+      while (null != (string = reader.readLine())) {
+        outputBuilder.append(string).append('\n');
+      }
+    }
+    return outputBuilder.toString();
+  }
+
+  public static final Date cutDate(Date date) {
+    Calendar c = Calendar.getInstance();
+    c.setTime(date);
+    c.set(Calendar.HOUR_OF_DAY, 0);
+    c.set(Calendar.MINUTE, 0);
+    c.set(Calendar.SECOND, 0);
+    c.set(Calendar.MILLISECOND, 0);
+
+    return c.getTime();
+  }
 }
